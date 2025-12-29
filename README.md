@@ -1,1 +1,1 @@
-# postgresql-shpora
+# PostgreSQL - Шпаргалка 

@@ -37,3 +37,41 @@ sudo -u postgres pg_dump \
   -f /home/ikoshcheev/backups/wms-test_2025-12-29.dump \
   wms-test
 ```
+
+Пример скрипта для автоматизации бекапов (пайтон):
+
+```
+#!/bin/python3
+
+import psycopg2
+from psycopg2 import Error
+import datetime
+import os
+
+datenow = datetime.datetime.now().strftime("%Y_%m_%d_%H%M%S")
+
+os.system('find /mnt/BackUP/ -type f -mtime +2 -delete')
+
+#### Connect to DB
+try:
+    # Подключиться к существующей базе данных
+        connection = psycopg2.connect(user="wms-backup", password="СЛОЖНЫЙПАРОЛЬ", host="ИМЯСЕРВЕРА", port="5432", database="postgres")
+        cursor = connection.cursor()
+        getALLDB = "SELECT * FROM pg_catalog.pg_database"
+        cursor.execute(getALLDB)
+        ALLDBList = cursor.fetchall()
+
+        for row in ALLDBList:
+                if row[1] != "postgres" and row[1].find("template") < 0:
+                        print('/opt/pgpro/1c-16/bin/pg_dump -Fc --dbname=postgresql://wms-backup:PAWDSS@ИМЯСЕРВЕРА:5432/' +  row[1] + ' > /mnt/BackUP/' + row[1] + '_' + datenow + '.dump')
+                        os.system('/opt/pgpro/1c-16/bin/pg_dump -Fc --dbname=postgresql://wms-backup:СЛОЖНЫЙПАРОЛЬ@EUMOWSQLP051:5432/' +  row[1] + ' > /mnt/BackUP/' + row[1] + '_' + datenow + '.dump')
+
+except (Exception, Error) as error:
+        print("Ошибка при работе с PostgreSQL", error)
+finally:
+        if connection:
+                cursor.close()
+                connection.close()
+                print("Соединение с PostgreSQL закрыто")
+
+```

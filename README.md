@@ -16,7 +16,7 @@ sudo cp /home/ikoshcheev/wms-upp_2025_12_29_163001.dump /var/tmp/pg_restore/
 sudo chown postgres:postgres /var/tmp/pg_restore/wms-upp_2025_12_29_163001.dump
 sudo chmod 640 /var/tmp/pg_restore/wms-upp_2025_12_29_163001.dump
 
-# Теперь восстанавливаем уже из этого места
+# Теперь восстанавливаем уже из этого места + логирование
 sudo -u postgres pg_restore \
   -d wms-test \
   --clean --if-exists \
